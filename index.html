@@ -5,159 +5,446 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Fryseroversigt</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Fryseroversigt v6</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap&v=6" rel="stylesheet">
 <style>
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-  :root{
-    --bg:#0a1628;--bg2:#0e1e38;--bg3:#081020;--frost:#1a2f50;
-    --border:rgba(100,160,220,0.15);--border2:rgba(100,160,220,0.3);
-    --text:#c8dff5;--text2:#6a90b8;--text3:#3d5f80;
-    --accent:#4db8ff;--accent2:#1a6fa0;
-    --in-bg:#0d3352;--in-border:#2a7fba;--in-text:#7dd4ff;
-    --success:#4fffb0;--danger:#ff6b6b;
-  }
-  body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden;}
-  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(77,184,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(77,184,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
-  .app{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:1.5rem 1.5rem 8rem;}
+/* === RESET === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  header{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 0 1.5rem;border-bottom:1px solid var(--border);margin-bottom:1.5rem;gap:1rem;}
-  .logo{display:flex;align-items:center;gap:14px;min-width:0;}
-  .logo-icon{width:52px;height:52px;flex-shrink:0;background:var(--frost);border:1px solid var(--border2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;}
-  h1{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#fff;letter-spacing:-.5px;line-height:1.1;}
-  h1 span{display:block;font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.15em;font-family:'DM Mono',monospace;margin-top:4px;}
-  .header-right{display:flex;align-items:center;gap:12px;flex-shrink:0;}
-  .counter-badge{background:var(--frost);border:1px solid var(--border2);border-radius:10px;padding:10px 20px;font-size:14px;color:var(--accent);text-align:center;line-height:1.4;white-space:nowrap;}
-  .counter-badge strong{display:block;font-size:24px;color:#fff;font-family:'Syne',sans-serif;}
-  .edit-toggle{background:var(--frost);border:1px solid var(--border2);border-radius:10px;padding:14px 20px;font-size:15px;color:var(--text2);cursor:pointer;font-family:'DM Mono',monospace;transition:background .15s,color .15s,border-color .15s;white-space:nowrap;}
-  .edit-toggle.active{background:rgba(255,107,107,0.12);border-color:rgba(255,107,107,0.4);color:var(--danger);}
-  .time-display{font-size:13px;color:var(--text3);letter-spacing:.1em;margin-top:4px;}
+/* === TOKENS === */
+:root {
+  --bg:      #0a1628;
+  --bg2:     #0e1e38;
+  --frost:   #1a2f50;
+  --border:  rgba(100,160,220,0.15);
+  --border2: rgba(100,160,220,0.30);
+  --text:    #c8dff5;
+  --text2:   #6a90b8;
+  --text3:   #3d5f80;
+  --accent:  #4db8ff;
+  --accent2: #1a6fa0;
+  --in-bg:   #0d3352;
+  --in-bdr:  #2a7fba;
+  --in-txt:  #7dd4ff;
+  --success: #4fffb0;
+  --danger:  #ff6b6b;
+}
 
-  /* Section */
-  .section-wrap{margin-top:1.25rem;}
-  .section-head{display:flex;align-items:center;gap:8px;margin-bottom:.6rem;}
-  .section-label{font-size:10px;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;padding-left:2px;flex:1;}
-  .section-label-input{font-size:11px;letter-spacing:.1em;text-transform:uppercase;background:transparent;border:none;border-bottom:1px solid var(--border2);color:var(--text);font-family:'DM Mono',monospace;padding:2px 4px;outline:none;width:160px;}
-  .section-label-input:focus{border-bottom-color:var(--accent);}
-  .btn-del-section{background:none;border:1px solid rgba(255,107,107,0.3);border-radius:6px;color:var(--danger);font-size:11px;padding:3px 8px;cursor:pointer;font-family:'DM Mono',monospace;opacity:.7;transition:opacity .1s;}
-  .btn-del-section:hover{opacity:1;}
+/* === BASE === */
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(77,184,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(77,184,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
 
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;}
+/* === LAYOUT === */
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px 120px;
+}
 
-  /* Item card */
-  .item{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px 8px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;-webkit-tap-highlight-color:transparent;user-select:none;min-height:110px;transition:border-color .15s,background .15s;}
-  .item.in{background:var(--in-bg);border-color:var(--in-border);}
-  .item .emoji{font-size:28px;line-height:1;pointer-events:none;}
-  .item .name{font-size:11px;font-weight:500;color:var(--text2);line-height:1.3;text-align:center;pointer-events:none;}
-  .item.in .name{color:var(--in-text);}
-  .item .qty-row{display:flex;align-items:center;gap:0;margin-top:4px;background:rgba(0,0,0,.25);border-radius:8px;overflow:hidden;}
-  .item .qty-btn{width:30px;height:28px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500;color:var(--text2);cursor:pointer;border:none;background:transparent;transition:background .1s,color .1s;line-height:1;-webkit-tap-highlight-color:transparent;}
-  .item .qty-btn:active{background:rgba(77,184,255,.15);color:var(--accent);transform:scale(.88);}
-  .item.in .qty-btn{color:var(--in-text);}
-  .item .qty-num{min-width:28px;text-align:center;font-size:15px;font-weight:500;color:var(--success);font-family:'Syne',sans-serif;pointer-events:none;}
-  .item:not(.in) .qty-num{color:var(--text3);}
+/* === HEADER === */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 0 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+  gap: 16px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.logo-icon {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  background: var(--frost);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+.logo-text h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+.logo-text .sub {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.18em;
+  margin-top: 5px;
+}
+.logo-text .clock {
+  display: block;
+  font-size: 12px;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+  margin-top: 3px;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.edit-btn {
+  background: var(--frost);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 14px 22px;
+  font-size: 16px;
+  font-family: 'DM Mono', monospace;
+  color: var(--text2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.edit-btn.active {
+  background: rgba(255,107,107,0.12);
+  border-color: rgba(255,107,107,0.4);
+  color: var(--danger);
+}
+.counter {
+  background: var(--frost);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 10px 22px;
+  text-align: center;
+  white-space: nowrap;
+}
+.counter strong {
+  display: block;
+  font-family: 'Syne', sans-serif;
+  font-size: 26px;
+  color: #fff;
+  line-height: 1;
+}
+.counter span {
+  font-size: 13px;
+  color: var(--accent);
+}
 
-  /* Delete overlay on item (edit mode) */
-  .item .item-del{position:absolute;inset:0;border-radius:14px;background:rgba(255,60,60,.13);border:1.5px solid rgba(255,107,107,.4);display:none;align-items:center;justify-content:center;cursor:pointer;font-size:22px;color:var(--danger);}
-  .edit-mode .item .item-del{display:flex;}
-  .edit-mode .item .qty-row{opacity:.25;pointer-events:none;}
+/* === SECTIONS === */
+.section {
+  margin-top: 28px;
+}
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.section-title {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--text3);
+  text-transform: uppercase;
+  flex: 1;
+}
+.section-title-input {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border2);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  padding: 4px 6px;
+  outline: none;
+  flex: 1;
+  min-width: 0;
+}
+.section-title-input:focus { border-bottom-color: var(--accent); }
+.del-section-btn {
+  background: none;
+  border: 1px solid rgba(255,107,107,0.3);
+  border-radius: 8px;
+  color: var(--danger);
+  font-size: 12px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-family: 'DM Mono', monospace;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 
-  /* Add row */
-  .add-section-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);}
-  .add-item-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:.75rem;}
-  .add-item-row select{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:14px 12px;font-family:'DM Mono',monospace;font-size:14px;color:var(--text);outline:none;cursor:pointer;flex:1;min-width:140px;}
-  .add-item-row select:focus{border-color:var(--accent);}
-  input.txt{flex:1;min-width:160px;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;font-family:'DM Mono',monospace;font-size:15px;color:var(--text);outline:none;transition:border-color .15s;}
-  input.txt:focus{border-color:var(--accent);}
-  input.txt::placeholder{color:var(--text3);}
-  .btn{background:var(--accent2);border:1px solid var(--accent);border-radius:10px;color:var(--accent);font-family:'DM Mono',monospace;font-size:15px;font-weight:500;padding:14px 20px;cursor:pointer;transition:background .12s,transform .08s;white-space:nowrap;}
-  .btn:active{transform:scale(.95);}
-  .hint{font-size:12px;color:var(--text3);margin-top:.5rem;padding-left:2px;}
+/* === GRID === */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+}
 
-  /* Add item to category pill (edit mode hidden otherwise) */
-  .add-to-section{display:none;background:rgba(77,184,255,.07);border:1px dashed var(--border2);border-radius:10px;padding:8px;cursor:pointer;font-size:11px;color:var(--text3);text-align:center;transition:background .12s;}
-  .add-to-section:hover{background:rgba(77,184,255,.14);color:var(--accent);}
+/* === CARD === */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px 10px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s, border-color 0.12s;
+  min-height: 130px;
+}
+.card.in {
+  background: var(--in-bg);
+  border-color: var(--in-bdr);
+}
+.card .emoji {
+  font-size: 32px;
+  line-height: 1;
+  pointer-events: none;
+}
+.card .name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  text-align: center;
+  line-height: 1.3;
+  pointer-events: none;
+}
+.card.in .name { color: var(--in-txt); }
 
-  @media(max-width:480px){.grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;}h1{font-size:18px;}}
-  @media(min-width:600px){.grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;}.item{min-height:125px;}.item .emoji{font-size:34px;}.item .name{font-size:13px;}}
+/* qty row */
+.qty-row {
+  display: flex;
+  align-items: center;
+  background: rgba(0,0,0,0.3);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.qty-btn {
+  width: 36px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--text2);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.1s;
+}
+.qty-btn:active {
+  background: rgba(77,184,255,0.2);
+  color: var(--accent);
+}
+.card.in .qty-btn { color: var(--in-txt); }
+.qty-num {
+  min-width: 32px;
+  text-align: center;
+  font-size: 16px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  color: var(--success);
+  pointer-events: none;
+}
+.card:not(.in) .qty-num { color: var(--text3); }
+
+/* delete overlay */
+.card-del {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: rgba(255,50,50,0.13);
+  border: 1.5px solid rgba(255,107,107,0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  color: var(--danger);
+  cursor: pointer;
+}
+.edit-mode .card-del { display: flex; }
+.edit-mode .qty-row  { opacity: 0.2; pointer-events: none; }
+
+/* === BOTTOM AREA === */
+.bottom {
+  margin-top: 40px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.input-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: stretch;
+}
+.input-row input,
+.input-row select {
+  height: 52px;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 0 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 15px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+  -webkit-appearance: none;
+}
+.input-row input:focus,
+.input-row select:focus { border-color: var(--accent); }
+.input-row input::placeholder { color: var(--text3); }
+.input-row .inp-name  { flex: 2; min-width: 180px; }
+.input-row .inp-emoji { flex: 0 0 60px; text-align: center; font-size: 22px; padding: 0 8px; }
+.input-row .inp-cat   { flex: 1; min-width: 160px; }
+.input-row .inp-cat-name { flex: 2; min-width: 200px; }
+.action-btn {
+  height: 52px;
+  padding: 0 24px;
+  background: var(--accent2);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.08s;
+  flex-shrink: 0;
+}
+.action-btn:active { transform: scale(0.95); }
+.row-label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--text3);
+  text-transform: uppercase;
+}
+.hint {
+  font-size: 12px;
+  color: var(--text3);
+}
 </style>
 </head>
 <body>
 <div class="app" id="app">
-  <header>
+
+  <div class="header">
     <div class="logo">
       <div class="logo-icon">🧊</div>
-      <div>
-        <h1>FRYSEREN<span>OVERSIGT</span></h1>
-        <div class="time-display" id="clock"></div>
+      <div class="logo-text">
+        <h1>FRYSEREN</h1>
+        <span class="sub">OVERSIGT</span>
+        <span class="clock" id="clock"></span>
       </div>
     </div>
     <div class="header-right">
-      <button class="edit-toggle" id="editBtn" onclick="toggleEdit()">✏️ Rediger</button>
-      <div class="counter-badge"><strong id="count">0</strong>varer i alt</div>
+      <button class="edit-btn" id="editBtn" onclick="toggleEdit()">✏️ Rediger</button>
+      <div class="counter">
+        <strong id="count">0</strong>
+        <span>varer i alt</span>
+      </div>
     </div>
-  </header>
+  </div>
 
   <div id="sections"></div>
 
-  <!-- Add new category -->
-  <div class="add-section-row">
-    <input class="txt" type="text" id="newCatName" placeholder="Ny overskrift (f.eks. 🧃 Drikkevarer)..." maxlength="30" />
-    <button class="btn" onclick="addCategory()">+ Kategori</button>
+  <div class="bottom">
+    <div class="row-label">Tilføj ny vare</div>
+    <div class="input-row">
+      <input class="inp-name"  type="text" id="newName"  placeholder="Navn (f.eks. Laks)" maxlength="25" />
+      <input class="inp-emoji" type="text" id="newEmoji" placeholder="🐟" maxlength="4" />
+      <select class="inp-cat" id="newCat"></select>
+      <button class="action-btn" onclick="addItem()">+ Vare</button>
+    </div>
+
+    <div class="row-label" style="margin-top:8px;">Tilføj ny kategori</div>
+    <div class="input-row">
+      <input class="inp-cat-name" type="text" id="newCatName" placeholder="Navn (f.eks. 🧃 Drikkevarer)" maxlength="30" />
+      <button class="action-btn" onclick="addCategory()">+ Kategori</button>
+    </div>
+    <div class="hint">Tip: Tryk og hold på emoji-feltet for emoji-tastatur</div>
   </div>
 
-  <!-- Add new item -->
-  <div class="add-item-row">
-    <input class="txt" type="text" id="newName" placeholder="Ny vare..." maxlength="25" />
-    <input class="txt" type="text" id="newEmoji" placeholder="🐟" maxlength="4" style="width:64px;flex:none;text-align:center;font-size:22px;padding:14px 6px;" />
-    <select id="newCat"></select>
-    <button class="btn" onclick="addItem()">+ Vare</button>
-  </div>
-  <div class="hint">Tip: Tryk og hold på emoji-feltet for emoji-tastatur på mobil</div>
 </div>
-
 <script>
-// ── Data ─────────────────────────────────────────────────────────────────────
-const DEFAULT_CATS = [
-  { id:'cat-meat',  label:'🥩 Kød & fisk',    items:[
+// ── Defaults ──────────────────────────────────────────────────────────────────
+const DEFAULTS = [
+  { id:'cat-meat',  label:'🥩 Kød & fisk', items:[
     {e:'🥩',n:'Oksekød'},{e:'🍗',n:'Kylling'},{e:'🐟',n:'Fisk'},
     {e:'🥓',n:'Bacon'},{e:'🦐',n:'Rejer'},{e:'🌭',n:'Pølser'},
     {e:'🐷',n:'Svinekød'},{e:'🦆',n:'And'},
   ]},
-  { id:'cat-veg',   label:'🥦 Grønt & frugt', items:[
+  { id:'cat-veg', label:'🥦 Grønt & frugt', items:[
     {e:'🌿',n:'Ærter'},{e:'🥕',n:'Gulerødder'},{e:'🌽',n:'Majs'},
     {e:'🍓',n:'Jordbær'},{e:'🫐',n:'Blåbær'},{e:'🥦',n:'Broccoli'},
     {e:'🧅',n:'Løg'},{e:'🫛',n:'Bønner'},
   ]},
-  { id:'cat-ready', label:'🍕 Færdigretter',  items:[
+  { id:'cat-ready', label:'🍕 Færdigretter', items:[
     {e:'🍕',n:'Pizza'},{e:'🥘',n:'Lasagne'},{e:'🍲',n:'Suppe'},
     {e:'🫕',n:'Gryderet'},{e:'🥙',n:'Wrap/Burrito'},
   ]},
-  { id:'cat-other', label:'🍦 Andet',          items:[
+  { id:'cat-other', label:'🍦 Andet', items:[
     {e:'🧊',n:'Isterninger'},{e:'🍞',n:'Brød'},{e:'🧈',n:'Smør'},
     {e:'🍦',n:'Is'},{e:'🥚',n:'Æg'},
   ]},
 ];
 
-function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
-function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+// ── Storage ───────────────────────────────────────────────────────────────────
+function load(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e) { return d; } }
+function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
 
-// cats: [{id, label, items:[{e,n}]}]
-// state: {itemKey: count}
-let cats  = load('fryser_cats', JSON.parse(JSON.stringify(DEFAULT_CATS)));
-let state = load('fryser_qty',  {});
+let cats  = load('fryser_cats', JSON.parse(JSON.stringify(DEFAULTS)));
+let qty   = load('fryser_qty', {});
 let editMode = false;
 
-function itemKey(catId, name){ return catId+'::'+name.toLowerCase().replace(/\s+/g,'-'); }
+function ikey(catId, name) { return catId + '::' + name.toLowerCase().replace(/\s+/g, '-'); }
 
 // ── Counter ───────────────────────────────────────────────────────────────────
-function updateCounter(){
-  const total = Object.values(state).reduce((a,b)=>a+(b||0),0);
-  document.getElementById('count').textContent = total;
+function refreshCounter() {
+  document.getElementById('count').textContent =
+    Object.values(qty).reduce((a, b) => a + (b || 0), 0);
 }
 
-// ── Edit mode ─────────────────────────────────────────────────────────────────
-function toggleEdit(){
+// ── Edit toggle ───────────────────────────────────────────────────────────────
+function toggleEdit() {
   editMode = !editMode;
   document.getElementById('app').classList.toggle('edit-mode', editMode);
   const btn = document.getElementById('editBtn');
@@ -167,201 +454,184 @@ function toggleEdit(){
 }
 
 // ── Render ────────────────────────────────────────────────────────────────────
-function render(){
-  const sec = document.getElementById('sections');
-  sec.innerHTML = '';
+function render() {
+  const container = document.getElementById('sections');
+  container.innerHTML = '';
 
-  for(const cat of cats){
-    const wrap = document.createElement('div');
-    wrap.className = 'section-wrap';
-    wrap.dataset.catId = cat.id;
+  for (const cat of cats) {
+    const section = document.createElement('div');
+    section.className = 'section';
 
-    // Section header
+    // Head
     const head = document.createElement('div');
     head.className = 'section-head';
 
-    const labelInput = document.createElement('input');
-    labelInput.className = 'section-label-input';
-    labelInput.value = cat.label;
-    labelInput.spellcheck = false;
-    labelInput.addEventListener('change', ()=>{
-      cat.label = labelInput.value;
-      save('fryser_cats', cats);
-      populateCatSelect();
-    });
-    // Show as plain text when not in edit mode via pointer-events
-    labelInput.addEventListener('pointerdown', e=>{ if(!editMode) e.preventDefault(); });
+    if (editMode) {
+      const inp = document.createElement('input');
+      inp.className = 'section-title-input';
+      inp.value = cat.label;
+      inp.spellcheck = false;
+      inp.addEventListener('change', () => { cat.label = inp.value; save('fryser_cats', cats); refreshCatSelect(); });
+      head.appendChild(inp);
 
-    const labelSpan = document.createElement('span');
-    labelSpan.className = 'section-label';
-    labelSpan.textContent = cat.label;
-
-    // In edit mode show input, otherwise span
-    if(editMode){
-      head.appendChild(labelInput);
       const delBtn = document.createElement('button');
-      delBtn.className = 'btn-del-section';
+      delBtn.className = 'del-section-btn';
       delBtn.textContent = 'Slet kategori';
-      delBtn.onclick = ()=>{
-        if(cat.items.length > 0 && !confirm(`Slet "${cat.label}" og alle dens varer?`)) return;
-        cats = cats.filter(c=>c.id !== cat.id);
-        // clean state
-        for(const item of cat.items){ delete state[itemKey(cat.id, item.n)]; }
+      delBtn.onclick = () => {
+        if (cat.items.length > 0 && !confirm('Slet "' + cat.label + '" og alle dens varer?')) return;
+        cat.items.forEach(i => delete qty[ikey(cat.id, i.n)]);
+        cats = cats.filter(c => c.id !== cat.id);
         save('fryser_cats', cats);
-        save('fryser_qty', state);
-        updateCounter();
+        save('fryser_qty', qty);
+        refreshCounter();
         render();
-        populateCatSelect();
+        refreshCatSelect();
       };
       head.appendChild(delBtn);
     } else {
-      head.appendChild(labelSpan);
+      const title = document.createElement('div');
+      title.className = 'section-title';
+      title.textContent = cat.label;
+      head.appendChild(title);
     }
 
-    wrap.appendChild(head);
+    section.appendChild(head);
 
     // Grid
     const grid = document.createElement('div');
     grid.className = 'grid';
+    cat.items.forEach(item => grid.appendChild(makeCard(cat.id, item.e, item.n)));
+    section.appendChild(grid);
 
-    for(const item of cat.items){
-      grid.appendChild(buildItem(cat.id, item.e, item.n));
-    }
-
-    wrap.appendChild(grid);
-    sec.appendChild(wrap);
+    container.appendChild(section);
   }
 
-  updateCounter();
-  populateCatSelect();
+  refreshCounter();
+  refreshCatSelect();
 }
 
-function buildItem(catId, e, n){
-  const k = itemKey(catId, n);
-  const qty = state[k] || 0;
-  const div = document.createElement('div');
-  div.className = 'item' + (qty > 0 ? ' in' : '');
-  div.dataset.key = k;
+function makeCard(catId, e, n) {
+  const k   = ikey(catId, n);
+  const num = qty[k] || 0;
+
+  const card = document.createElement('div');
+  card.className = 'card' + (num > 0 ? ' in' : '');
+  card.dataset.key = k;
 
   // Delete overlay
-  const delOverlay = document.createElement('div');
-  delOverlay.className = 'item-del';
-  delOverlay.textContent = '✕';
-  delOverlay.title = 'Slet vare';
-  delOverlay.onclick = ev => {
+  const del = document.createElement('div');
+  del.className = 'card-del';
+  del.textContent = '✕';
+  del.onclick = ev => {
     ev.stopPropagation();
-    const cat = cats.find(c=>c.id===catId);
-    if(!cat) return;
-    cat.items = cat.items.filter(i=>i.n !== n);
-    delete state[k];
+    const cat = cats.find(c => c.id === catId);
+    if (!cat) return;
+    cat.items = cat.items.filter(i => i.n !== n);
+    delete qty[k];
     save('fryser_cats', cats);
-    save('fryser_qty', state);
-    updateCounter();
+    save('fryser_qty', qty);
+    refreshCounter();
     render();
   };
 
-  const emojiEl = document.createElement('span');
-  emojiEl.className = 'emoji';
-  emojiEl.textContent = e;
+  const emoji = document.createElement('span');
+  emoji.className = 'emoji';
+  emoji.textContent = e;
 
-  const nameEl = document.createElement('span');
-  nameEl.className = 'name';
-  nameEl.textContent = n;
+  const name = document.createElement('span');
+  name.className = 'name';
+  name.textContent = n;
 
-  const qtyRow = document.createElement('div');
-  qtyRow.className = 'qty-row';
+  const row = document.createElement('div');
+  row.className = 'qty-row';
 
   const minus = document.createElement('button');
-  minus.className = 'qty-btn minus';
+  minus.className = 'qty-btn';
   minus.textContent = '−';
-  minus.setAttribute('aria-label','Fjern en');
-  minus.onclick = ev => { ev.stopPropagation(); setQty(catId, k, (state[k]||0)-1, div); };
+  minus.onclick = ev => { ev.stopPropagation(); changeQty(k, card, -1); };
 
-  const qtyNum = document.createElement('span');
-  qtyNum.className = 'qty-num';
-  qtyNum.textContent = qty;
+  const numEl = document.createElement('span');
+  numEl.className = 'qty-num';
+  numEl.textContent = num;
 
   const plus = document.createElement('button');
-  plus.className = 'qty-btn plus';
+  plus.className = 'qty-btn';
   plus.textContent = '+';
-  plus.setAttribute('aria-label','Tilføj en');
-  plus.onclick = ev => { ev.stopPropagation(); setQty(catId, k, (state[k]||0)+1, div); };
+  plus.onclick = ev => { ev.stopPropagation(); changeQty(k, card, +1); };
 
-  qtyRow.append(minus, qtyNum, plus);
-  div.append(delOverlay, emojiEl, nameEl, qtyRow);
-  return div;
+  row.append(minus, numEl, plus);
+  card.append(del, emoji, name, row);
+  return card;
 }
 
-function setQty(catId, k, val, card){
-  state[k] = Math.max(0, val);
-  save('fryser_qty', state);
-  updateCounter();
-  if(!card) return;
-  const qty = state[k]||0;
-  card.classList.toggle('in', qty > 0);
-  card.querySelector('.qty-num').textContent = qty;
+function changeQty(k, card, delta) {
+  qty[k] = Math.max(0, (qty[k] || 0) + delta);
+  save('fryser_qty', qty);
+  refreshCounter();
+  card.classList.toggle('in', qty[k] > 0);
+  card.querySelector('.qty-num').textContent = qty[k];
 }
 
-// ── Category select ───────────────────────────────────────────────────────────
-function populateCatSelect(){
+// ── Cat select ────────────────────────────────────────────────────────────────
+function refreshCatSelect() {
   const sel = document.getElementById('newCat');
+  const prev = sel.value;
   sel.innerHTML = '';
-  for(const cat of cats){
+  cats.forEach(cat => {
     const opt = document.createElement('option');
     opt.value = cat.id;
     opt.textContent = cat.label;
     sel.appendChild(opt);
-  }
+  });
+  if (prev) sel.value = prev;
 }
 
-// ── Add category ──────────────────────────────────────────────────────────────
-function addCategory(){
-  const inp = document.getElementById('newCatName');
-  const label = inp.value.trim();
-  if(!label){ inp.focus(); return; }
-  const id = 'cat-'+Date.now();
-  cats.push({ id, label, items:[] });
-  save('fryser_cats', cats);
-  inp.value = '';
-  render();
-}
-
-// ── Add item ─────────────────────────────────────────────────────────────────
-function addItem(){
+// ── Add item ──────────────────────────────────────────────────────────────────
+function addItem() {
   const nameEl  = document.getElementById('newName');
   const emojiEl = document.getElementById('newEmoji');
   const catSel  = document.getElementById('newCat');
   const n = nameEl.value.trim();
   const e = emojiEl.value.trim() || '📦';
   const catId = catSel.value;
-  if(!n){ nameEl.focus(); return; }
-  if(!catId){ alert('Vælg en kategori'); return; }
-  const cat = cats.find(c=>c.id===catId);
-  if(!cat) return;
-  cat.items.push({e,n});
+  if (!n) { nameEl.focus(); return; }
+  const cat = cats.find(c => c.id === catId);
+  if (!cat) return;
+  cat.items.push({ e, n });
   save('fryser_cats', cats);
-  nameEl.value=''; emojiEl.value='';
+  nameEl.value = '';
+  emojiEl.value = '';
   render();
-  setTimeout(()=>{
-    const k = itemKey(catId, n);
-    const el = document.querySelector(`[data-key="${k}"]`);
-    if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
-  },100);
+  setTimeout(() => {
+    const el = document.querySelector('[data-key="' + ikey(catId, n) + '"]');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 100);
 }
 
-// Enter triggers
-document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('newName').addEventListener('keydown',e=>{ if(e.key==='Enter') addItem(); });
-  document.getElementById('newCatName').addEventListener('keydown',e=>{ if(e.key==='Enter') addCategory(); });
+// ── Add category ──────────────────────────────────────────────────────────────
+function addCategory() {
+  const inp   = document.getElementById('newCatName');
+  const label = inp.value.trim();
+  if (!label) { inp.focus(); return; }
+  cats.push({ id: 'cat-' + Date.now(), label, items: [] });
+  save('fryser_cats', cats);
+  inp.value = '';
+  render();
+}
+
+// ── Enter keys ────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('newName').addEventListener('keydown',    e => { if (e.key === 'Enter') addItem(); });
+  document.getElementById('newCatName').addEventListener('keydown', e => { if (e.key === 'Enter') addCategory(); });
 });
 
 // ── Clock ─────────────────────────────────────────────────────────────────────
-function updateClock(){
+function tick() {
   document.getElementById('clock').textContent =
-    new Date().toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit'});
+    new Date().toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' });
 }
-updateClock();
-setInterval(updateClock,10000);
+tick();
+setInterval(tick, 10000);
 
 render();
 </script>
